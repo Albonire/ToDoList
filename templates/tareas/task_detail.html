@@ -4,7 +4,9 @@
 <p><strong>Descripción:</strong> {{ task.descripcion }}</p>
 <p><strong>Estado:</strong> {{ task.get_estado_display }}</p>
 <p><strong>Prioridad:</strong> {{ task.get_prioridad_display }}</p>
-<p><strong>Fecha de vencimiento:</strong> {{ task.fecha_vencimiento }}</p>
+<p><strong>Fecha de vencimiento:</strong> {{ task.fecha_vencimiento|date:"d M Y" }}</p>
+{% if task.hora_inicio %}<p><strong>Hora de inicio:</strong> {{ task.hora_inicio|time:"H:i" }}</p>{% endif %}
+{% if task.hora_fin %}<p><strong>Hora de fin:</strong> {{ task.hora_fin|time:"H:i" }}</p>{% endif %}
 <a href="{% url 'task-update' task.pk %}">Editar</a> |
 <a href="{% url 'task-delete' task.pk %}">Eliminar</a> |
 <a href="{% url 'task-list' %}">Volver al listado</a>

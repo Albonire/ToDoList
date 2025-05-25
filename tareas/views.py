@@ -5,6 +5,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 from django.utils import timezone
 from .models import Task
+from .forms import TaskForm
 
 def register(request):
     if request.method == 'POST':
@@ -46,8 +47,7 @@ class TaskListView(LoginRequiredMixin, ListView):
             context['prioridades'] = Task.PRIORIDAD_CHOICES
             context['estado_actual'] = self.request.GET.get('estado', '')
             context['prioridad_actual'] = self.request.GET.get('prioridad', '')
-            context['today'] = date.today()
-            context['soon'] = date.today() + timedelta(days=2)
+            context['now'] = timezone.now()
             
             print(f"Contexto final: {context}")  # Mensaje de depuración
             return context
@@ -66,7 +66,7 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
 class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
     template_name = 'tareas/task_form.html'
-    fields = ['nombre', 'descripcion', 'fecha_vencimiento', 'estado', 'prioridad']
+    form_class = TaskForm
     success_url = reverse_lazy('task-list')
 
     def form_valid(self, form):
@@ -76,7 +76,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 class TaskUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
     template_name = 'tareas/task_form.html'
-    fields = ['nombre', 'descripcion', 'fecha_vencimiento', 'estado', 'prioridad']
+    form_class = TaskForm
     success_url = reverse_lazy('task-list')
 
     def get_queryset(self):

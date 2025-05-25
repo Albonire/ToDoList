@@ -15,13 +15,7 @@
                 </label>
                 
                 <div class="form-field">
-                    {% if field.name == 'fecha_vencimiento' %}
-                        <input type="date" name="{{ field.name }}" id="{{ field.id_for_label }}" 
-                               class="form-control" placeholder="dd/mm/yyyy"
-                               {% if field.value %}value="{{ field.value|date:'Y-m-d' }}"{% endif %}>
-                    {% else %}
-                        {{ field }}
-                    {% endif %}
+                    {{ field }}
                     
                     {% if field.help_text %}
                         <small class="form-text text-muted">{{ field.help_text }}</small>
