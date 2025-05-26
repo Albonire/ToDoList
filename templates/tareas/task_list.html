@@ -32,7 +32,7 @@
     {% if tasks %}
         <div class="task-grid">
             {% for task in tasks %}
-            <div class="task-card {% if task.fecha_vencimiento < today %}task-overdue{% elif task.fecha_vencimiento <= soon and task.fecha_vencimiento >= today %}task-due-soon{% endif %}">
+            <div class="task-card {% if task.fecha_vencimiento < now.date or (task.fecha_vencimiento == now.date and task.hora_fin and task.hora_fin < now.time) %}task-overdue{% endif %}">
                 <div class="task-header">
                     <h3 class="task-title">
                         <a href="{% url 'task-detail' task.pk %}">{{ task.nombre }}</a>
@@ -50,10 +50,9 @@
                     <div class="task-due-date">
                         <i class="fas fa-calendar-alt"></i>
                         {{ task.fecha_vencimiento|date:"d M Y" }}
-                        {% if task.fecha_vencimiento < today %}
+                        {% if task.hora_inicio %}{{ task.hora_inicio|time:"H:i" }}{% endif %}{% if task.hora_fin %} - {{ task.hora_fin|time:"H:i" }}{% endif %}
+                        {% if task.fecha_vencimiento < now.date or (task.fecha_vencimiento == now.date and task.hora_fin and task.hora_fin < now.time) %}
                             <span class="task-due-badge overdue">¡Vencida!</span>
-                        {% elif task.fecha_vencimiento <= soon and task.fecha_vencimiento >= today %}
-                            <span class="task-due-badge due-soon">Próxima a vencer</span>
                         {% endif %}
                     </div>
                 </div>
