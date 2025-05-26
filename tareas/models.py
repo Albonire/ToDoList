@@ -17,8 +17,6 @@ class Task(models.Model):
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField()
     fecha_vencimiento = models.DateField()
-    hora_inicio = models.TimeField(null=True, blank=True)
-    hora_fin = models.TimeField(null=True, blank=True)
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente')
     prioridad = models.CharField(max_length=10, choices=PRIORIDAD_CHOICES, default='media')
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)

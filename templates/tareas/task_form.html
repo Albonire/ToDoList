@@ -15,7 +15,7 @@
                 </label>
                 
                 <div class="form-field">
-                    {{ field }}
+                    {{ field }} {# This will now use the widget defined in TaskForm #}
                     
                     {% if field.help_text %}
                         <small class="form-text text-muted">{{ field.help_text }}</small>
