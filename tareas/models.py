@@ -19,6 +19,7 @@ class Task(models.Model):
     fecha_vencimiento = models.DateField()
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente')
     prioridad = models.CharField(max_length=10, choices=PRIORIDAD_CHOICES, default='media')
+    hora_inicio = models.TimeField(null=True, blank=True)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
