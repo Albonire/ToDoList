@@ -8,7 +8,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView)
 
 from .forms import TaskForm
-from .models import Task
+from .models import Task, TaskEvent
 
 
 class FormSuccessMessageMixin:
