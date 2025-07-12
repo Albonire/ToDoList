@@ -114,3 +114,45 @@ class TaskDeleteView(LoginRequiredMixin, DeleteSuccessMessageMixin, DeleteView):
 
     def get_queryset(self):
         return Task.objects.filter(usuario=self.request.user)
+
+
+from datetime import timedelta
+
+class ScheduleView(LoginRequiredMixin, ListView):
+    template_name = 'tareas/schedule.html'
+    context_object_name = 'tasks'
+
+    def get_queryset(self):
+        # No necesitamos un queryset principal aquí, lo manejaremos en get_context_data
+        return Task.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = timezone.now().date()
+        start_of_week = today - timedelta(days=today.weekday())
+        end_of_week = start_of_week + timedelta(days=6)
+
+        # Obtener tareas de la semana que tienen una hora de inicio asignada
+        tasks_this_week = Task.objects.filter(
+            usuario=self.request.user,
+            fecha_vencimiento__range=[start_of_week, end_of_week],
+            hora_inicio__isnull=False
+        )
+
+        # Organizar tareas por día
+        schedule = {i: [] for i in range(7)}
+        for task in tasks_this_week:
+            day_index = task.fecha_vencimiento.weekday()
+            schedule[day_index].append(task)
+
+        # Ordenar las tareas de cada día por hora
+        for day_tasks in schedule.values():
+            day_tasks.sort(key=lambda x: x.hora_inicio)
+
+        context['schedule'] = schedule
+        context['week_dates'] = [start_of_week + timedelta(days=i) for i in range(7)]
+        context['week_days'] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+        context['start_of_week'] = start_of_week
+        context['end_of_week'] = end_of_week
+        
+        return context
