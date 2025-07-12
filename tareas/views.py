@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView)
 
+from .forms import TaskForm
 from .models import Task
 
 
