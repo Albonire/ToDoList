@@ -1,13 +1,41 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h2>{{ task.nombre }}</h2>
-<p><strong>Descripción:</strong> {{ task.descripcion }}</p>
-<p><strong>Estado:</strong> {{ task.get_estado_display }}</p>
-<p><strong>Prioridad:</strong> {{ task.get_prioridad_display }}</p>
-<p><strong>Fecha de vencimiento:</strong> {{ task.fecha_vencimiento|date:"d M Y" }}</p>
-{% if task.hora_inicio %}<p><strong>Hora de inicio:</strong> {{ task.hora_inicio|time:"H:i" }}</p>{% endif %}
-{% if task.hora_fin %}<p><strong>Hora de fin:</strong> {{ task.hora_fin|time:"H:i" }}</p>{% endif %}
-<a href="{% url 'task-update' task.pk %}">Editar</a> |
-<a href="{% url 'task-delete' task.pk %}">Eliminar</a> |
-<a href="{% url 'task-list' %}">Volver al listado</a>
+<div class="detail-container">
+    <div class="task-header">
+        <h1>{{ task.nombre }}</h1>
+        <div class="task-meta">
+            <span class="badge priority-{{ task.prioridad }}">{{ task.get_prioridad_display }}</span>
+            <span class="badge status-{{ task.estado }}">{{ task.get_estado_display }}</span>
+        </div>
+    </div>
+
+    {% if task.descripcion %}
+        <div class="task-description">
+            <p>{{ task.descripcion }}</p>
+        </div>
+    {% endif %}
+
+    <div class="detail-actions">
+        <a href="{% url 'task-update' task.pk %}" class="btn btn-primary">Editar Tarea</a>
+        <a href="{% url 'task-delete' task.pk %}" class="btn btn-danger">Eliminar Tarea</a>
+    </div>
+
+    <div class="schedule-section">
+        <h3>Horarios Programados</h3>
+        <a href="{% url 'task-add-event' task.pk %}" class="btn btn-success mb-3">Añadir Nuevo Horario</a>
+        
+        <div class="event-list">
+            {% for event in events %}
+                <div class="event-item">
+                    <span>{{ event.fecha|date:"l, d M Y" }}</span>
+                    <span>{{ event.hora_inicio|time:"H:i" }} - {{ event.hora_fin|time:"H:i" }}</span>
+                </div>
+            {% empty %}
+                <p>No hay horarios programados para esta tarea.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}
+

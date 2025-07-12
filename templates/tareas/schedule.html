@@ -18,11 +18,11 @@
                 </div>
                 <div class="tasks-for-day">
                     {% with day_index=forloop.counter0 %}
-                        {% for task in schedule|get_item:day_index %}
-                            <a href="{% url 'task-detail' task.id %}" class="task-card-link">
+                        {% for event in schedule|get_item:day_index %}
+                            <a href="{% url 'task-detail' event.task.id %}" class="task-card-link">
                                 <div class="task-card">
-                                    <div class="task-time">{{ task.hora_inicio|time:"H:i" }}</div>
-                                    <div class="task-title">{{ task.nombre }}</div>
+                                    <div class="task-time">{{ event.hora_inicio|time:"H:i" }} - {{ event.hora_fin|time:"H:i" }}</div>
+                                    <div class="task-title">{{ event.task.nombre }}</div>
                                 </div>
                             </a>
                         {% empty %}
