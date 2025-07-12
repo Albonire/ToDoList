@@ -15,3 +15,16 @@ class TaskForm(forms.ModelForm):
             'nombre': 'Título de la Tarea',
             'descripcion': 'Descripción Detallada',
         }
+
+
+from django import forms
+
+class EventCreationForm(forms.Form):
+    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    start_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+    end_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+    days_of_week = forms.MultipleChoiceField(
+        choices=[(0, 'Lunes'), (1, 'Martes'), (2, 'Miércoles'), (3, 'Jueves'), (4, 'Viernes'), (5, 'Sábado'), (6, 'Domingo')],
+        widget=forms.CheckboxSelectMultiple
+    )
