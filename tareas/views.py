@@ -1,10 +1,34 @@
-from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  UpdateView)
+
 from .models import Task
+
+
+class FormSuccessMessageMixin:
+    success_message = ''
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.success_message:
+            messages.success(self.request, self.success_message)
+        return response
+
+
+class DeleteSuccessMessageMixin:
+    success_message = ''
+
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        if self.success_message:
+            messages.success(self.request, self.success_message)
+        return response
+
 
 def register(request):
     if request.method == 'POST':
@@ -15,6 +39,7 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
 
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
@@ -32,28 +57,22 @@ class TaskListView(LoginRequiredMixin, ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
-        from datetime import date, timedelta
-        try:
-            print("Obteniendo contexto...")  # Mensaje de depuración
-            context = super().get_context_data(**kwargs)
-            print(f"Contexto base: {context}")  # Mensaje de depuración
-            
-            # Asegurarse de que Task tenga los atributos necesarios
-            print(f"Task.ESTADO_CHOICES: {hasattr(Task, 'ESTADO_CHOICES')}")
-            print(f"Task.PRIORIDAD_CHOICES: {hasattr(Task, 'PRIORIDAD_CHOICES')}")
-            
-            context['estados'] = Task.ESTADO_CHOICES
-            context['prioridades'] = Task.PRIORIDAD_CHOICES
-            context['estado_actual'] = self.request.GET.get('estado', '')
-            context['prioridad_actual'] = self.request.GET.get('prioridad', '')
-            context['today'] = date.today()
-            context['soon'] = date.today() + timedelta(days=2)
-            
-            print(f"Contexto final: {context}")  # Mensaje de depuración
-            return context
-        except Exception as e:
-            print(f"Error en get_context_data: {str(e)}")  # Mensaje de error
-            raise  # Vuelve a lanzar la excepción para ver el error completo
+        context = super().get_context_data(**kwargs)
+        # El queryset base (context['tasks']) ya está filtrado por usuario en get_queryset
+        
+        # Contar tareas que NO están completadas
+        context['count'] = context['tasks'].exclude(estado='completada').count()
+
+        search_input = self.request.GET.get('search-area') or ''
+        if search_input:
+            # Filtrar por el campo 'nombre' que existe en el modelo
+            context['tasks'] = context['tasks'].filter(
+                nombre__icontains=search_input)
+
+        context['search_input'] = search_input
+
+        return context
+
 
 class TaskDetailView(LoginRequiredMixin, DetailView):
     model = Task
@@ -63,29 +82,35 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
     def get_queryset(self):
         return Task.objects.filter(usuario=self.request.user)
 
-class TaskCreateView(LoginRequiredMixin, CreateView):
+
+class TaskCreateView(LoginRequiredMixin, FormSuccessMessageMixin, CreateView):
     model = Task
     template_name = 'tareas/task_form.html'
     fields = ['nombre', 'descripcion', 'fecha_vencimiento', 'estado', 'prioridad']
     success_url = reverse_lazy('task-list')
+    success_message = "Tarea creada con éxito."
 
     def form_valid(self, form):
         form.instance.usuario = self.request.user
         return super().form_valid(form)
 
-class TaskUpdateView(LoginRequiredMixin, UpdateView):
+
+class TaskUpdateView(LoginRequiredMixin, FormSuccessMessageMixin, UpdateView):
     model = Task
     template_name = 'tareas/task_form.html'
     fields = ['nombre', 'descripcion', 'fecha_vencimiento', 'estado', 'prioridad']
     success_url = reverse_lazy('task-list')
+    success_message = "Tarea actualizada con éxito."
 
     def get_queryset(self):
         return Task.objects.filter(usuario=self.request.user)
 
-class TaskDeleteView(LoginRequiredMixin, DeleteView):
+
+class TaskDeleteView(LoginRequiredMixin, DeleteSuccessMessageMixin, DeleteView):
     model = Task
     template_name = 'tareas/task_confirm_delete.html'
     success_url = reverse_lazy('task-list')
+    success_message = "Tarea eliminada con éxito."
 
     def get_queryset(self):
         return Task.objects.filter(usuario=self.request.user)

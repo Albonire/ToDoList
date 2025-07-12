@@ -1,47 +1,61 @@
-# ToDoList
+# Gestor de Tareas Avanzado
 
-## Description
+Este es un proyecto Django que implementa una aplicación de lista de tareas (To-Do list) con funcionalidades avanzadas, incluyendo autenticación de usuarios, gestión de tareas personales, y una interfaz limpia y moderna.
 
-This is a simple web-based ToDo list application built with Django. It allows users to create, view, update, and delete tasks. Users can also register and log in to manage their own tasks.
+## Características
 
-## Project Structure
+- **Autenticación de Usuarios:** Sistema completo de registro, inicio de sesión y cierre de sesión.
+- **Gestión de Tareas (CRUD):** Los usuarios pueden crear, ver, actualizar y eliminar sus propias tareas.
+- **Seguridad:** Cada usuario solo puede acceder a sus propias tareas. Las vistas están protegidas y requieren inicio de sesión.
+- **Filtrado y Búsqueda:** Permite buscar tareas por título y filtrar por estado o prioridad.
+- **Notificaciones:** Feedback visual para el usuario al crear, actualizar o eliminar tareas.
+- **Diseño Responsivo:** Interfaz adaptable a diferentes tamaños de pantalla.
 
-The project follows a standard Django project structure:
+## Requisitos Previos
 
-- `manage.py`: Django's command-line utility for administrative tasks.
-- `gestor_tareas/`: The main project directory.
-    - `__init__.py`: Marks the directory as a Python package.
-    - `asgi.py`: ASGI entry point for the project.
-    - `settings.py`: Project settings.
-    - `urls.py`: Project-level URL configurations.
-    - `wsgi.py`: WSGI entry point for the project.
-- `tareas/`: The main application directory for ToDo list functionality.
-    - `__init__.py`: Marks the directory as a Python package.
-    - `admin.py`: Django admin configurations for the app.
-    - `apps.py`: Application configuration.
-    - `forms.py`: Django forms for task creation and updates.
-    - `models.py`: Database models for tasks.
-    - `tests.py`: Application tests.
-    - `urls.py`: Application-level URL configurations.
-    - `views.py`: Views that handle request logic.
-- `templates/`: Directory for HTML templates.
-    - `base.html`: Base template for consistent site structure.
-    - `registration/`: Templates for user authentication.
-        - `login.html`: Login page template.
-        - `logout.html`: Logout confirmation page template.
-        - `register.html`: User registration page template.
-    - `tareas/`: Templates specific to the tasks application.
-        - `task_confirm_delete.html`: Template for confirming task deletion.
-        - `task_detail.html`: Template for displaying a single task.
-        - `task_form.html`: Template for creating and updating tasks.
-        - `task_list.html`: Template for displaying the list of tasks.
-- `static/`: Directory for static files (CSS, JavaScript, images).
-    - `css/estilos.css`: Custom CSS file.
-- `staticfiles/`: Directory where static files are collected (managed by Django).
-- `tareas/migrations/`: Directory for database schema migrations.
-- `.idx/`: Directory for indexing (likely related to development environment setup).
-- `.vscode/`: Directory for VS Code editor settings.
+- Python 3.8 o superior
+- pip (gestor de paquetes de Python)
 
-## Setup Instructions
+## Instalación y Puesta en Marcha
 
-1. **Clone the repository:**
+1.  **Clona el repositorio:**
+    ```bash
+    git clone <URL-del-repositorio>
+    cd ToDoList
+    ```
+
+2.  **Crea y activa un entorno virtual:**
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # En Windows: venv\Scripts\activate
+    ```
+
+3.  **Instala las dependencias:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Crea un archivo `.env`:**
+    Copia el contenido de `.env.example` (o créalo desde cero) en un nuevo archivo llamado `.env` en la raíz del proyecto. Este archivo contendrá la `SECRET_KEY` y la configuración de `DEBUG`.
+    ```
+    SECRET_KEY='tu-clave-secreta-aqui'
+    DEBUG=True
+    ```
+
+5.  **Aplica las migraciones de la base de datos:**
+    ```bash
+    python manage.py migrate
+    ```
+
+6.  **Crea un superusuario (opcional):**
+    Esto te permitirá acceder al panel de administración de Django.
+    ```bash
+    python manage.py createsuperuser
+    ```
+
+7.  **Ejecuta el servidor de desarrollo:**
+    ```bash
+    python manage.py runserver
+    ```
+
+¡La aplicación estará disponible en `http://127.0.0.1:8000/`!
