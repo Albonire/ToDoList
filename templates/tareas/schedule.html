@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="schedule-container">
+    <div class="schedule-header">
+        <h2>Horario Semanal</h2>
+        <p>{{ start_of_week|date:"d M" }} - {{ end_of_week|date:"d M, Y" }}</p>
+    </div>
+
+    <div class="schedule-grid">
+        {% for day_name in week_days %}
+            <div class="day-column">
+                <div class="day-header">
+                    <h3>{{ day_name }}</h3>
+                    <p>{{ week_dates|slice:forloop.counter0|first|date:"d" }}</p>
+                </div>
+                <div class="tasks-for-day">
+                    {% with day_index=forloop.counter0 %}
+                        {% for task in schedule|get_item:day_index %}
+                            <a href="{% url 'task-detail' task.id %}" class="task-card-link">
+                                <div class="task-card">
+                                    <div class="task-time">{{ task.hora_inicio|time:"H:i" }}</div>
+                                    <div class="task-title">{{ task.nombre }}</div>
+                                </div>
+                            </a>
+                        {% empty %}
+                            <div class="no-tasks">
+                                <p>Sin tareas</p>
+                            </div>
+                        {% endfor %}
+                    {% endwith %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.schedule-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+.schedule-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.schedule-header h2 {
+    font-family: var(--fuente-titulos);
+    color: var(--color-texto-principal);
+}
+
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    min-height: 70vh;
+}
+
+.day-column {
+    background-color: #f9f9f9;
+    border-radius: var(--radio-borde);
+    padding: 10px;
+    border: 1px solid #eee;
+}
+
+.day-header {
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 10px;
+}
+
+.day-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.day-header p {
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0;
+}
+
+.tasks-for-day {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.task-card-link {
+    text-decoration: none;
+}
+
+.task-card {
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 10px;
+    border-left: 4px solid var(--color-contraste-principal);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.task-time {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #555;
+}
+
+.task-title {
+    font-size: 0.95rem;
+    color: var(--color-texto-principal);
+    margin-top: 4px;
+}
+
+.no-tasks {
+    text-align: center;
+    padding: 20px;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}
