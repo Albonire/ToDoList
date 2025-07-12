@@ -98,7 +98,7 @@ class TaskCreateView(LoginRequiredMixin, FormSuccessMessageMixin, CreateView):
 class TaskUpdateView(LoginRequiredMixin, FormSuccessMessageMixin, UpdateView):
     model = Task
     template_name = 'tareas/task_form.html'
-    fields = ['nombre', 'descripcion', 'fecha_vencimiento', 'estado', 'prioridad']
+    fields = ['nombre', 'descripcion', 'fecha_vencimiento', 'hora_inicio', 'estado', 'prioridad']
     success_url = reverse_lazy('task-list')
     success_message = "Tarea actualizada con éxito."
 
