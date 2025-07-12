@@ -157,3 +157,44 @@ class ScheduleView(LoginRequiredMixin, ListView):
         context['end_of_week'] = end_of_week
         
         return context
+
+
+from django.views import View
+from django.shortcuts import get_object_or_404
+from .forms import EventCreationForm
+from datetime import timedelta
+
+class AddEventView(LoginRequiredMixin, View):
+    template_name = 'tareas/add_event_form.html'
+
+    def get(self, request, pk):
+        task = get_object_or_404(Task, pk=pk, usuario=request.user)
+        form = EventCreationForm()
+        return render(request, self.template_name, {'form': form, 'task': task})
+
+    def post(self, request, pk):
+        task = get_object_or_404(Task, pk=pk, usuario=request.user)
+        form = EventCreationForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            start_date = data['start_date']
+            end_date = data['end_date']
+            start_time = data['start_time']
+            end_time = data['end_time']
+            days_of_week = [int(d) for d in data['days_of_week']]
+
+            current_date = start_date
+            while current_date <= end_date:
+                if current_date.weekday() in days_of_week:
+                    TaskEvent.objects.create(
+                        task=task,
+                        fecha=current_date,
+                        hora_inicio=start_time,
+                        hora_fin=end_time
+                    )
+                current_date += timedelta(days=1)
+            
+            messages.success(request, f'Se ha programado la tarea recurrente "{task.nombre}".')
+            return redirect('task-detail', pk=task.pk)
+
+        return render(request, self.template_name, {'form': form, 'task': task})
